@@ -41,10 +41,22 @@ get_page_events <- function(x) {
   )
 }
 
-# # read artist lineup
-# read_html(event_urls[9]) %>% 
-#   html_nodes(".running_order_name") %>% 
-#   html_text() %>% 
-#   str_trim() %>% 
-#   str_remove_all("\t")
+get_event_lineup <- function(x) {
+  
+  # construct event page url
+  event_url <- glue("http://berghain.de{x}")
+  
+  # read lineup
+  event_lineup <- read_html(event_url) %>%
+    html_nodes(".running_order_name") %>%
+    html_text() %>%
+    str_trim() %>%
+    str_remove_all("\t")
+  
+  tibble(
+    artist_name = event_lineup,
+    event_url = rep(x, length(artist_name))
+  )
+}
+
 

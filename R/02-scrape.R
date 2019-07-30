@@ -19,8 +19,16 @@ events_date_range <- gen_event_page_range(start_mon, start_year,
 
 # scrape ------------------------------------------------------------------
 
+# get events
 events <- map_dfr(events_date_range, get_page_events)
+
+# get lineups
+lineups <- map(events$event_url, safely(get_event_lineup))
+
+# get lineup results
+lineups_result <- bind_rows(transpose(lineups)[['result']])
 
 # export ------------------------------------------------------------------
 
 write_csv(events, "data/berghain-events.csv")
+write_csv(lineups_result, "data/berghain-lineups.csv")

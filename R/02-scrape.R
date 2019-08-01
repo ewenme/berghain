@@ -25,7 +25,6 @@ events <- map_dfr(events_date_range, get_page_events)
 # get lineups
 lineups <- map(events$event_url, safely(get_event_lineup))
 
-# get lineup results
 lineups_result <- bind_rows(transpose(lineups)[['result']])
 
 # export ------------------------------------------------------------------

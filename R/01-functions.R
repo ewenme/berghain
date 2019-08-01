@@ -45,18 +45,49 @@ get_event_lineup <- function(x) {
   
   # construct event page url
   event_url <- glue("http://berghain.de{x}")
+
+  # get event context
+  event_context <- read_html(event_url) %>% 
+    html_nodes(".col_context") 
   
-  # read lineup
-  event_lineup <- read_html(event_url) %>%
-    html_nodes(".running_order_name") %>%
-    html_text() %>%
-    str_trim() %>%
-    str_remove_all("\t")
+  # get venues
+  venues <- event_context %>% 
+    html_nodes(".type_stage_color")
   
-  tibble(
-    artist_name = event_lineup,
-    event_url = rep(x, length(artist_name))
-  )
+  if (length(venues) == 0) {
+    venues <- event_context %>% 
+      html_nodes(".type_dancefloor_color") 
+  }
+    
+  venues <- venues %>% 
+    html_text() %>% 
+    str_remove("Running Order") %>% 
+    str_trim()
+  
+  # get running order
+  running_order <- event_context %>% 
+    html_nodes(".type_stage_color + .running_order")
+  
+  if (length(running_order) == 0) {
+    running_order <- event_context %>% 
+      html_nodes(".type_dancefloor_color + .running_order")
+  }
+  
+  # get artist names
+  artist_names <- lapply(running_order, function(x) {
+    
+    x %>% 
+      html_nodes(".running_order_name") %>% 
+      html_text() %>%
+      str_trim() %>%
+      str_remove_all("\t")
+  })
+
+  # return a data frame
+  tibble(venue = rep(venues, sapply(artist_names, length)),
+         artist_name = unlist(artist_names),
+         event_url = x
+         )
 }
 
 

@@ -18,6 +18,7 @@ Lineups - `data/berghain-lineups.csv`
 
 | Header | Description | Data Type |
 | --- | --- | --- |
+| `venue` | name of venue | text |
 | `artist_name` | name of artist | text |
 | `event_url` | event url | text |
 

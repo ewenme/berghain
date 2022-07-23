@@ -7,10 +7,9 @@ library(tidyverse)
 library(rvest)
 
 source("R/functions.R")
-
 fs::dir_create("data")
 
-# setup -------------------------------------------------------------------
+# scrape ------------------------------------------------------------------
 
 # get all listings URLs
 listing_urls <- gather_month_listing_urls()
@@ -18,15 +17,8 @@ listing_urls <- gather_month_listing_urls()
 # get all event URLs
 event_urls <- gather_event_urls(listing_urls)
 
-# scrape ------------------------------------------------------------------
-
-# get events
-events <- map_dfr(events_date_range, get_page_events)
-
-# get lineups
-lineups <- map(events$event_url, safely(get_event_lineup))
-
-lineups_result <- bind_rows(transpose(lineups)[['result']])
+# get event data
+events <- map(event_urls, get_event_info)
 
 # export ------------------------------------------------------------------
 

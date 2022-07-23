@@ -73,19 +73,28 @@ gather_event_urls <- function(x) {
 get_lineup_data <- function(page, floor) {
   
   floor_name <- page %>% 
-    rvest::html_elements(xpath = glue(".//div[contains(@data-set-floor, '{floor}')]")) %>% 
+    rvest::html_element(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
     rvest::html_element("h2") %>% 
     rvest::html_text2()
   
   artists <- page %>% 
-    rvest::html_elements(xpath = glue(".//div[contains(@data-set-floor, '{floor}')]")) %>% 
-    rvest::html_elements(".running-order-set__info") %>%
-    rvest::html_elements(xpath = "span[1]/text()") %>% 
+    rvest::html_elements(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
+    rvest::html_elements(".running-order-set") %>% 
+    rvest::html_element(".running-order-set__info") %>%
+    rvest::html_element(xpath = "span[1]/text()") %>% 
     html_text2()
   
   set_times <- page %>% 
-    rvest::html_elements(xpath = glue(".//div[contains(@data-set-floor, '{floor}')]")) %>% 
+    rvest::html_elements(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
     rvest::html_elements(".running-order-set")
+  
+  # check if floor closed at all
+  floor_closed <- page %>% 
+    rvest::html_elements(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
+    rvest::html_elements(".running-order-set") %>% 
+    rvest::html_attr("data-set-floor-closed")
+  
+  set_times <- set_times[is.na(floor_closed)]
 
   tibble(
     floor = floor_name,
@@ -102,9 +111,9 @@ get_lineup_data <- function(page, floor) {
 # get all lineup data
 gather_lineups <- function(page) {
   
-  lineup_0 <- get_lineup_info(page, floor = 0)
-  lineup_1 <- get_lineup_info(page, floor = 1)
-  lineup_2 <- get_lineup_info(page, floor = 2)
+  lineup_0 <- get_lineup_data(page, floor = 0)
+  lineup_1 <- get_lineup_data(page, floor = 1)
+  lineup_2 <- get_lineup_data(page, floor = 2)
   
   bind_rows(lineup_0, lineup_1, lineup_2)
 }
@@ -121,20 +130,26 @@ get_event_info <- function(
   
   event_name <- page %>% 
     rvest::html_element("h1") %>% 
-    html_text2()
+    rvest::html_text2()
   event_id <- basename(event_url)
+  
+  event_date <- page %>% 
+    rvest::html_element("main") %>% 
+    rvest::html_element("div:nth-of-type(2) > p") %>% 
+    rvest::html_element("span") %>% 
+    rvest::html_text2()
+  
+  is_event_cancelled <- str_detect(event_name, regex("cancelled", ignore_case = TRUE))
+  
+  if (is_event_cancelled) return(NULL)
 
   lineup <- gather_lineups(page)
-  
-  event_start_date <- as.Date(min(lineup$set_time_start))
-  event_end_date <- as.Date(max(lineup$set_time_start))
   
   list(
     event_id = event_id,
     event_name = event_name,
     event_url = event_url,
-    event_start_date = event_start_date,
-    event_end_date = event_end_date,
+    event_date = dmy(event_date),
     lineup = lineup
   )
 

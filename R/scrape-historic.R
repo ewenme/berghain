@@ -1,21 +1,22 @@
 # load packages / functions -----------------------------------------------
 
-source("R/00-requirements.R")
-source("R/01-functions.R")
+library(glue)
+library(fs)
+library(lubridate)
+library(tidyverse)
+library(rvest)
+
+source("R/functions.R")
 
 fs::dir_create("data")
 
 # setup -------------------------------------------------------------------
 
-# date params
-start_year = 2009
-start_mon = 11
-end_year = 2019
-end_mon = 7
+# get all listings URLs
+listing_urls <- gather_month_listing_urls()
 
-# generate dates to scrape
-events_date_range <- gen_event_page_range(start_mon, start_year,
-                                          end_mon, end_year)
+# get all event URLs
+event_urls <- gather_event_urls(listing_urls)
 
 # scrape ------------------------------------------------------------------
 

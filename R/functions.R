@@ -16,6 +16,24 @@ get_program_years <- function(
   return(years)
 }
 
+# get previous calendar months listings
+get_last_months_listing_url <- function(base_url = "https://www.berghain.berlin") {
+  
+  last_month = floor_date(Sys.Date(), unit = "months") - 1
+  last_month_format <- format(last_month, "%Y/%m")
+  
+  page <- rvest::read_html(
+    glue::glue("{base_url}/en/program/archive/")
+  )
+  
+  urls <- page %>% 
+    rvest::html_elements("#months-index") %>% 
+    rvest::html_elements("a") %>% 
+    rvest::html_attr("href")
+  
+  str_subset(urls, last_month_format)
+}
+
 # get urls of monthly listings for a given year
 get_month_listing_urls <- function(
     year,
@@ -163,7 +181,7 @@ tidy_events <- function(x) {
     .x
   })
   
-  arrange(df, event_id)
+  arrange(df, event_date)
 }
 
 tidy_lineups <- function(x) {

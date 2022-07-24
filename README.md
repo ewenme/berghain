@@ -2,7 +2,9 @@
 
 [![scrape berghain listings](https://github.com/ewenme/berghain/actions/workflows/main.yml/badge.svg)](https://github.com/ewenme/berghain/actions/workflows/main.yml)
 
-Data from [Bergain's](http://berghain.de/) event listings, collated in July 2022.
+[Bergain's](http://berghain.de/) event listings, as flat-files. Updated on the first day of each month at 12:00 UTC.
+
+N.B. this is a work in progress and should be treated as such.
 
 ## Contents
 
@@ -29,4 +31,12 @@ Lineups - `data/lineups.csv`
 
 ### Code
 
-`/R` directory contains all code used to gather this data.
+R:
+
+- `R/scrape-new.R`: retrieves latest months data and appends new observations to CSVs in `data/`
+- `R/scrape-historic.R`: retrieves all months data and overwrites CSVs in `data/`
+- `R/functions.R`: local R functions used elsewhere
+
+Actions:
+
+- `.github/workflows/main.yml`: runs `R/scrape-new.R` once a month

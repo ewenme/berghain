@@ -18,9 +18,12 @@ listing_urls <- gather_month_listing_urls()
 event_urls <- gather_event_urls(listing_urls)
 
 # get event data
-events <- map(event_urls, get_event_info)
+event_data <- map(event_urls, possibly(get_event_info, otherwise = NULL))
 
 # export ------------------------------------------------------------------
 
-write_csv(events, "data/berghain-events.csv")
-write_csv(lineups_result, "data/berghain-lineups.csv")
+events <- tidy_events(event_data)
+lineups <- tidy_lineups(event_data)
+
+write_csv(events, "data/events.csv")
+write_csv(lineups, "data/lineups.csv")

@@ -73,7 +73,7 @@ gather_event_urls <- function(x) {
 get_lineup_data <- function(page, floor) {
   
   floor_name <- page %>% 
-    rvest::html_element(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
+    rvest::html_elements(xpath = glue(".//div[@data-set-floor='{floor}']")) %>% 
     rvest::html_element("h2") %>% 
     rvest::html_text2()
   
@@ -95,7 +95,8 @@ get_lineup_data <- function(page, floor) {
     rvest::html_attr("data-set-floor-closed")
   
   set_times <- set_times[is.na(floor_closed)]
-
+  artists <- artists[is.na(floor_closed)]
+  
   tibble(
     floor = floor_name,
     artist_name = artists,
@@ -153,4 +154,26 @@ get_event_info <- function(
     lineup = lineup
   )
 
+}
+
+tidy_events <- function(x) {
+  
+  df <- map_dfr(x, ~{
+    .x[["lineup"]] = NULL
+    .x
+  })
+  
+  arrange(df, event_id)
+}
+
+tidy_lineups <- function(x) {
+  
+  df <- map_dfr(x, ~{
+    .x[["lineup"]]$event_id = .x[["event_id"]]
+    .x[["lineup"]]
+  })
+  
+  df %>% 
+    select(event_id, everything()) %>% 
+    arrange(event_id)
 }

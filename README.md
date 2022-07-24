@@ -1,5 +1,7 @@
 # berghain
 
+[![scrape berghain listings](https://github.com/ewenme/berghain/actions/workflows/main.yml/badge.svg)](https://github.com/ewenme/berghain/actions/workflows/main.yml)
+
 Data from [Bergain's](http://berghain.de/) event listings, collated in July 2022.
 
 ## Contents

@@ -175,5 +175,6 @@ tidy_lineups <- function(x) {
   
   df %>% 
     select(event_id, everything()) %>% 
-    arrange(event_id)
+    arrange(event_id) %>% 
+    mutate(across(c(set_time_start, set_time_end), as.character))
 }

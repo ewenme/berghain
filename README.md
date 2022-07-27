@@ -14,7 +14,7 @@ Events - `data/events.csv`
 
 | Header | Description | Data Type |
 | --- | --- | --- |
-| `event_id` | numeric ID of event | text |
+| `event_id` | ID of event (taken from `event_url`) | text |
 | `event_name` | name of event | text |
 | `event_date` | date of event | date |
 | `event_url` | event url | text |
@@ -23,7 +23,7 @@ Lineups - `data/lineups.csv`
 
 | Header | Description | Data Type |
 | --- | --- | --- |
-| `event_id` | numeric ID of event | text |
+| `event_id` | ID of event (taken from `event_url`) | text |
 | `floor` | name of floor | text |
 | `artist_name` | name of artist | text |
 | `set_time_start` | start date/time of set (Berlin local time) | datetime |

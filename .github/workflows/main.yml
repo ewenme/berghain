@@ -1,7 +1,9 @@
 # run on first day of the month at 12:00 UTC
 name: scrape berghain listings
 
-on: push
+on:
+  schedule:
+    - cron:  '0 12 1 * *'
 
 jobs: 
   autoscrape:

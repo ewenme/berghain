@@ -3,8 +3,11 @@
 library(glue)
 library(fs)
 library(lubridate)
-library(tidyverse)
+library(stringr)
+library(dplyr)
+library(purrr)
 library(rvest)
+library(readr)
 
 source("R/functions.R")
 fs::dir_create("data")
